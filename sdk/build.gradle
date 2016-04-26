@@ -1,0 +1,119 @@
+apply plugin: 'com.android.library'
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'android-sdk'
+
+    publishedGroupId = 'com.intilery.android'
+    libraryName = 'Intilery Android SDK'
+    artifact = 'sdk'
+
+    libraryDescription = 'Android SDK for the Intilery Platform'
+
+    siteUrl = 'http://www.intilery.com'
+    gitUrl = 'https://www.github.com/Intilery/intilery-android-sdk'
+
+    // RELEASE.PATCH(optional DEVELOPMENT STATE)
+    libraryVersion = '0.1.1'
+
+    developerId = 'intilery'
+    developerName = 'Intilery Dev Team'
+    developerEmail = 'chester.enquiries@intilery.com'
+
+    licenseName = 'The MIT License (MIT)'
+    licenseUrl = 'https://opensource.org/licenses/MIT'
+    allLicenses = ["MIT"]
+}
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 23
+        versionCode 1
+        versionName "0.1.1"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    provided "org.projectlombok:lombok:1.16.6"
+}
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+
+apply plugin: 'com.jfrog.bintray'
+
+version = libraryVersion
+
+if (project.hasProperty("android")) { // Android libraries
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.srcDirs
+    }
+
+    task javadoc(type: Javadoc) {
+        source = android.sourceSets.main.java.srcDirs
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+} else { // Java libraries
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+// Bintray
+Properties properties = new Properties()
+properties.load(project.rootProject.file('bintray.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+
+    configurations = ['archives']
+    pkg {
+        repo = bintrayRepo
+        name = bintrayName
+        userOrg = properties.getProperty("bintray.org")
+        desc = libraryDescription
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = allLicenses
+        publish = true
+        publicDownloadNumbers = true
+        version {
+            desc = libraryDescription
+            gpg {
+                sign = true
+                passphrase = new String(System.console() != null ? System.console().readPassword("\nPlease enter key passphrase: ") : '')
+            }
+        }
+    }
+}

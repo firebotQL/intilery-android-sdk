@@ -19,8 +19,8 @@ ext {
     siteUrl = 'http://www.intilery.com'
     gitUrl = 'https://www.github.com/Intilery/intilery-android-sdk'
 
-    // RELEASE.PATCH(optional DEVELOPMENT STATE)
-    libraryVersion = '0.1.1'
+    // RELEASE.MAJOR.MINOR
+    libraryVersion = '0.1.2'
 
     developerId = 'intilery'
     developerName = 'Intilery Dev Team'

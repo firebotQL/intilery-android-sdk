@@ -157,6 +157,6 @@ class IntileryRequest {
                     pendingRequests.addAll(fails);
                 }
             }
-        }, 20, 20, TimeUnit.MINUTES);
+        }, 20*60, 20*60, TimeUnit.SECONDS);
     }
 }

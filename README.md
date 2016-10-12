@@ -1,5 +1,9 @@
 # Intilery Android SDK
 
+## Integration
+
+See the [Integration Guide](INTEGRATION.md)
+
 ### Prerequisites
 
 To build this library you will need the following:
